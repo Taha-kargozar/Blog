@@ -1,9 +1,7 @@
 package ir.blog.blog.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
 
@@ -59,7 +57,7 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-
+    @CreationTimestamp
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -67,7 +65,7 @@ public class User {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
-
+    @Enumerated(EnumType.STRING)
     public Role getRole() {
         return role;
     }

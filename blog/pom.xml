@@ -11,7 +11,6 @@
     <groupId>ir.blog</groupId>
     <artifactId>blog</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>blog</name>
     <description>blog</description>
     <url/>
     <licenses>
