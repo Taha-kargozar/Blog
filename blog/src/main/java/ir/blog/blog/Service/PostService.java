@@ -13,4 +13,8 @@ public interface PostService {
     Post DeletePost(int Id);
 
     Page<Post> getAllPosts(Pageable pageable);
+
+    Page<Post> getbyName(String name,Pageable pageable);
+
+    Page<Post> getbyNameAuthor(String name,Pageable pageable);
 }

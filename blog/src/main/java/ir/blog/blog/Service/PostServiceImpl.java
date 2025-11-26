@@ -40,7 +40,15 @@ public class PostServiceImpl implements PostService {
        return postRepo.findAll(pageable);
     }
 
+    @Override
+    public Page<Post> getbyName(String name, Pageable pageable) {
+        return postRepo.findByTitle(name,pageable);
+    }
 
+    @Override
+    public Page<Post> getbyNameAuthor(String name, Pageable pageable) {
+        return postRepo.findByAuthorName(name,pageable);
+    }
 
 
 }
