@@ -7,9 +7,11 @@ import org.springframework.data.domain.Pageable;
 public interface CommentService {
   Comment createComment(Comment comment);
 
-  Comment DeleteComment(int id);
+  void DeleteComment(int id);
 
   Page<Comment> getAllCommentForShow(Pageable pageable);
 
   Page<Comment> getAllCommentForAdmin(Pageable pageable);
+
+  public void approveComment(int id);
 }

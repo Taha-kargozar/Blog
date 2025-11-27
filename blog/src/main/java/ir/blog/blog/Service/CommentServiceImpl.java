@@ -21,13 +21,12 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public Comment DeleteComment(int id) {
+    public void DeleteComment(int id) {
         if (commentRepo.existsById(id)) {
             commentRepo.deleteById(id);
         } else {
             throw  new RuntimeException("comment not found");
         }
-        return null;
     }
 
     @Override
@@ -38,5 +37,12 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Page<Comment> getAllCommentForAdmin(Pageable pageable) {
         return commentRepo.findAll(pageable);
+    }
+    @Override
+    public void approveComment(int id) {
+        Comment comment = commentRepo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
+        comment.setApproved(true);
+        commentRepo.save(comment);
     }
 }
