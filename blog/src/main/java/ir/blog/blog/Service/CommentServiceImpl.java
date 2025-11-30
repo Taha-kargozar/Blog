@@ -7,6 +7,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class CommentServiceImpl implements CommentService {
     private final CommentRepo commentRepo;
@@ -44,5 +47,15 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
         comment.setApproved(true);
         commentRepo.save(comment);
+    }
+
+    @Override
+    public List<Comment> findByPostId(int postId) {
+        return commentRepo.findByPostCPostId(postId);
+    }
+
+    @Override
+    public Optional<Comment> findById(int id) {
+        return commentRepo.findById(id);
     }
 }

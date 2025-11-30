@@ -15,6 +15,7 @@ public class Comment {
     private User authorPost;
     private boolean approved = false;
     private LocalDateTime createdAt;
+    private Post postC;
 
     public int getCommentId() {
         return CommentId;
@@ -54,5 +55,13 @@ public class Comment {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Post getPostC() {
+        return postC;
+    }
+
+    public void setPostC(Post postC) {
+        this.postC = postC;
     }
 }

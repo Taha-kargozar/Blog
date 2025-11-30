@@ -2,28 +2,28 @@ package ir.blog.blog.Service;
 
 import ir.blog.blog.Model.Post;
 import ir.blog.blog.Model.Status;
+import ir.blog.blog.Model.Tag;
 import ir.blog.blog.Model.User;
 import ir.blog.blog.Repository.PostRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
     private final PostRepo postRepo;
-    @Autowired
+
     public PostServiceImpl(PostRepo postRepo) {
         this.postRepo = postRepo;
     }
 
-   @Override
+
+    @Override
    public Post CreatePost(Post post) {
-       post.setPostslug(post.getTitle());
        post.setStatus(post.getStatus() != null ? post.getStatus() : Status.DRAFT);
        post.setCreatedAt(LocalDateTime.now());
        if (Status.PUBLISHED.equals(post.getStatus())) {
@@ -38,7 +38,7 @@ public class PostServiceImpl implements PostService {
                 .map(existing -> {
                     existing.setTitle(post.getTitle());
                     existing.setContent(post.getContent());
-                    existing.setPostslug(post.getTitle()); // یا فقط اگر عنوان عوض شد
+                    existing.setPostslug(post.getTitle());
                     existing.setStatus(post.getStatus());
                     existing.setUpdatedAt(LocalDateTime.now());
                     if (post.getStatus().PUBLISHED.equals(post.getStatus()) && existing.getPublishedAt() == null) {
@@ -50,11 +50,7 @@ public class PostServiceImpl implements PostService {
     }
     @Override
     public void DeletePost(int Id) {
-        if (postRepo.existsById(Id)) {
             postRepo.deleteById(Id);
-        } else {
-            throw  new RuntimeException("post not found");
-        }
     }
 
     @Override
@@ -83,4 +79,23 @@ public class PostServiceImpl implements PostService {
                 .orElseThrow();
     }
 
+    @Override
+    public Optional<Post> findBySlug(String slug) {
+        return postRepo.findByPostslug(slug);
+    }
+
+    @Override
+    public Page<Post> findPublishedPosts(Pageable pageable) {
+        return postRepo.findByStatus(Status.PUBLISHED, pageable);
+    }
+
+    @Override
+    public Page<Post> findPublishedPostsbyslug(String slug,Pageable pageable) {
+        return postRepo.findByStatusaAndPostslug(Status.PUBLISHED,slug,pageable);
+    }
+
+    @Override
+    public List<Post> findByTag(Tag tag) {
+        return postRepo.findByPostTag(tag);
+    }
 }

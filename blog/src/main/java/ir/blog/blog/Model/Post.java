@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Post {
@@ -17,11 +18,14 @@ public class Post {
     private String postslug ;
     private Status status;
     private User author;
+    private Category category;
     private String excerpt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime publishedAt;
     private int views;
+    private List<Tag> PostTag;
+
 
     public int getPostId() {
         return postId;
@@ -110,4 +114,37 @@ public class Post {
     public void setViews(int views) {
         this.views = views;
     }
+    @ManyToMany
+    public List<Tag> getPostTag() {
+        return PostTag;
+    }
+
+    public void setPostTag(List<Tag> postTag) {
+        PostTag = postTag;
+    }
+    @OneToOne
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void CreateSlug() {
+        if (this.postslug == null || this.postslug.isBlank()) {
+            String base = this.title + "-" + this.postId;
+            this.postslug = slugs(base);
+        }
+    }
+
+    private String slugs(String input) {
+        if (input == null) return null;
+        return input.toLowerCase()
+                .replaceAll("[^a-z0-9]+", "-")
+                .replaceAll("^-|-$", "");
+    }
+
 }
