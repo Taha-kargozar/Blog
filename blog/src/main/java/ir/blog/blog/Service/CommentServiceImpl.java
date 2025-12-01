@@ -50,11 +50,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public List<Comment> findByPostId(int postId) {
-        return commentRepo.findByPostCPostId(postId);
-    }
-
-    @Override
     public Optional<Comment> findById(int id) {
         return commentRepo.findById(id);
     }

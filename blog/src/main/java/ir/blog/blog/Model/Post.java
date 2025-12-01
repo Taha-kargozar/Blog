@@ -13,18 +13,28 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int postId;
 
-    private String title;
-    private String content;
+    private String title; //
+    private String content; //
     private String postslug ;
     private Status status;
+    @ManyToOne
+    @JoinColumn
     private User author;
-    private Category category;
-    private String excerpt;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category; //
+    private String excerpt;  // خلاصه مقاله
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime publishedAt;
     private int views;
-    private List<Tag> PostTag;
+    @ManyToMany
+    @JoinTable(
+            name = "post_tags",
+            joinColumns = @JoinColumn(name = "post_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<Tag> PostTag;//
 
 
     public int getPostId() {
@@ -66,7 +76,7 @@ public class Post {
     public void setStatus(Status status) {
         this.status = status;
     }
-    @ManyToOne
+
     public User getAuthor() {
         return author;
     }
@@ -114,7 +124,7 @@ public class Post {
     public void setViews(int views) {
         this.views = views;
     }
-    @ManyToMany
+    @ManyToOne
     public List<Tag> getPostTag() {
         return PostTag;
     }
@@ -122,7 +132,7 @@ public class Post {
     public void setPostTag(List<Tag> postTag) {
         PostTag = postTag;
     }
-    @OneToOne
+    @ManyToOne
     public Category getCategory() {
         return category;
     }

@@ -19,7 +19,7 @@ public interface PostService {
 
     Page<Post> getAllPosts(Pageable pageable);
 
-    Page<Post> getAllPostsList(User user);
+    Page<Post> getAllPostsList(User user,Pageable pageable);
 
     Page<Post> getbyName(String name,Pageable pageable);
 

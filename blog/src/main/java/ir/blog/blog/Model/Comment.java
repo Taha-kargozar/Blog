@@ -12,10 +12,10 @@ public class Comment {
     private int CommentId;
 
     private String content;
-    private User authorPost;
+    private String authorName;
     private boolean approved = false;
     private LocalDateTime createdAt;
-    private Post postC;
+    private String Email;
 
     public int getCommentId() {
         return CommentId;
@@ -32,13 +32,13 @@ public class Comment {
     public void setContent(String content) {
         this.content = content;
     }
-    @ManyToOne
-    public User getAuthorPost() {
-        return authorPost;
+
+    public String getAuthorName() {
+        return authorName;
     }
 
-    public void setAuthorPost(User authorPost) {
-        this.authorPost = authorPost;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
     }
 
     public boolean isApproved() {
@@ -57,11 +57,11 @@ public class Comment {
         this.createdAt = createdAt;
     }
 
-    public Post getPostC() {
-        return postC;
+    public String getEmail() {
+        return Email;
     }
 
-    public void setPostC(Post postC) {
-        this.postC = postC;
+    public void setEmail(String email) {
+        Email = email;
     }
 }

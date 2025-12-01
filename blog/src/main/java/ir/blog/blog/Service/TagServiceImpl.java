@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -45,8 +44,8 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<Tag> findById(List<Integer> ids) {
-        return List.of();
+    public Optional<Tag> findById(int id) {
+        return tagRepo.findById(id);
     }
 
     @Override

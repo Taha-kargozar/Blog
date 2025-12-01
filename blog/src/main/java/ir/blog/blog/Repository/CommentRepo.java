@@ -11,5 +11,4 @@ import java.util.List;
 public interface CommentRepo extends JpaRepository<Comment,Integer> {
     Page<Comment> findByApprovedFalse(Pageable pageable);
     Page<Comment> findByApprovedTrueOrderByCreatedAtAsc(Pageable pageable);
-    List<Comment> findByPostCPostId(int postId);
 }

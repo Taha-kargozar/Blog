@@ -11,5 +11,5 @@ public interface CategoryService {
     Optional<Category> findById(int id);
     Category save(Category category);
     void delete(int id);
-    Optional<Category> findbyName(String name, Pageable pageable);
+    Page<Category> findbyName(String name, Pageable pageable);
 }

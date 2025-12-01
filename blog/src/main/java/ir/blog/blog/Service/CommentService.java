@@ -18,7 +18,5 @@ public interface CommentService {
 
   void approveComment(int id);
 
-  List<Comment> findByPostId(int postId);
-
   Optional<Comment> findById(int id);
 }

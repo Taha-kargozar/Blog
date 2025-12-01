@@ -15,10 +15,10 @@ import java.util.Optional;
 public interface PostRepo extends JpaRepository<Post,Integer> {
     Page<Post> findByTitle(String name, Pageable pageable);
     Page<Post> findByAuthorName(String name,Pageable pageable);
-    Page<Post> findAllByAuthor(User user);
+    Page<Post> findAllByAuthor(User user, Pageable pageable);
     Optional<Post> findByPostslug (String slug);
     Page<Post> findByStatus(Status status,Pageable pageable);
-    Page<Post> findByStatusaAndPostslug(Status status,String slug,Pageable pageable);
+    Page<Post> findByStatusAndPostslug(Status status,String slug,Pageable pageable);
     List<Post> findByPostTag(Tag tag);
     void deleteByPostId(int id);
 }

@@ -37,7 +37,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Optional<Category> findbyName(String name, Pageable pageable) {
+    public Page<Category> findbyName(String name, Pageable pageable) {
         return categoryRepo.findByNameCategory(name,pageable);
     }
 }

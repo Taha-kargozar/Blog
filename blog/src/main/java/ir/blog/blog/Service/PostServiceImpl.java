@@ -59,8 +59,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> getAllPostsList(User user) {
-        return postRepo.findAllByAuthor(user);
+    public Page<Post> getAllPostsList(User user,Pageable pageable) {
+        return postRepo.findAllByAuthor(user,pageable);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> findPublishedPostsbyslug(String slug,Pageable pageable) {
-        return postRepo.findByStatusaAndPostslug(Status.PUBLISHED,slug,pageable);
+        return postRepo.findByStatusAndPostslug(Status.PUBLISHED,slug,pageable);
     }
 
     @Override
