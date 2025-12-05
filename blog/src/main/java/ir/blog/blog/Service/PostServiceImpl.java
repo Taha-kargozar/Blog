@@ -32,9 +32,13 @@ public class PostServiceImpl implements PostService {
 
 
     @Override
-   public Post CreatePost(Post post,Authentication authentication) {
+   public Post CreatePost(Post post,Authentication auth) {
        post.setStatus(post.getStatus() != null ? post.getStatus() : Status.DRAFT);
-       post.setAuthor((User) authentication);
+        if (auth != null && auth.getPrincipal() instanceof UserDetails) {
+            String username = ((UserDetails) auth.getPrincipal()).getUsername();
+            User author = userService.findByUsername(username);
+            post.setAuthor(author);
+        }
        return postRepo.save(post);
    }
     @Override
@@ -100,53 +104,6 @@ public class PostServiceImpl implements PostService {
         return postRepo.findByPostTag(tag);
     }
 
-   /* @Override
-    public Post savePostFromDto(PostDto dto, Authentication auth) {
-        // PostServiceImpl.java
-            Post post = new Post();
-
-            post.setTitle(dto.title());
-            post.setContent(dto.content());
-            post.setExcerpt(dto.excerpt());
-            post.setStatus(dto.status() != null ? dto.status() : Status.DRAFT);
-
-            // نویسنده
-            User user = (User) auth.getPrincipal();
-            post.setAuthor(user);
-        String username = auth.getName(); // یا ((UserDetails) auth.getPrincipal()).getUsername()
-        User user1 = userService.findByUsername(username);
-        post.setAuthor(user1);
-
-            // دسته‌بندی
-            if (dto.categoryID() != null) {
-                Category category = categoryService.findById(dto.categoryID())
-                        .orElseThrow(() -> new IllegalArgumentException("دسته‌بندی یافت نشد"));
-                post.setCategory(category);
-            }
-
-            // تگ‌ها
-            if (dto.PostTagID() != null && !dto.PostTagID().isEmpty()) {
-                List<Tag> tags = dto.PostTagID().stream()
-                        .map(id -> tagService.findById(id)
-                                .orElseThrow(() -> new IllegalArgumentException("تگ یافت نشد: " + id)))
-                        .collect(Collectors.toList());
-                post.setPostTag(tags);
-            } else {
-                post.setPostTag(new ArrayList<>());
-            }
-
-            // slug
-            String slug = dto.title().toLowerCase().replaceAll("[^\\w\\s-]", "").replaceAll("[-\\s]+", "-");
-            post.setPostslug(slug);
-
-            // views
-            post.setViews(0);
-
-            return postRepo.save(post);
-
-    }
-
-    */
    @Override
    public Post savePostFromDto(PostDto dto
          //  , Authentication auth

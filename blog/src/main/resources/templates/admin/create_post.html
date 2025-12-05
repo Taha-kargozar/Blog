@@ -79,7 +79,7 @@
                 <div class="mt-2">
                     <select id="tagSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md">
                         <option value="">تگی را انتخاب کنید</option>
-                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>
+                        <option th:each="tag : ${tags}" th:value="${tag.tagId}" th:text="${tag.tagName}"></option>
                     </select>
                     <button type="button" id="addTagBtn" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm">افزودن تگ</button>
                     <input type="hidden" name="PostTagID" th:each="id : *{PostTagID}" th:value="${id}" />
