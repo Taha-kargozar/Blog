@@ -8,9 +8,10 @@ import java.time.LocalDateTime;
 public record CommentDto(
         @NotBlank(message = "content.blank")
         String content,
-        @NotBlank(message = "date.comment.blank")
          LocalDateTime created,
+                 @NotBlank
                  String authorName,
                  String Email,
-                 LocalDateTime createdAt) {
+                 LocalDateTime createdAt,
+        Post postC) {
 }

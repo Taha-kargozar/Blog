@@ -1,6 +1,7 @@
 package ir.blog.blog.Service;
 
 import ir.blog.blog.Model.Comment;
+import ir.blog.blog.Model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,7 +17,11 @@ public interface CommentService {
 
   Page<Comment> getAllCommentForAdmin(Pageable pageable);
 
-  void approveComment(int id);
+  List<Comment> approveComment(int id);
 
   Optional<Comment> findById(int id);
+
+  //List<Comment> findApprovedById(int id);
+
+  List<Comment> findApprovedByPostId(Integer postId);
 }

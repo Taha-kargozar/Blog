@@ -7,7 +7,6 @@ import ir.blog.blog.Model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,7 @@ public interface PostRepo extends JpaRepository<Post,Integer> {
     Page<Post> findAllByAuthor(User user, Pageable pageable);
     Optional<Post> findByPostslug (String slug);
     Page<Post> findByStatus(Status status,Pageable pageable);
-    Page<Post> findByStatusAndPostslug(Status status,String slug,Pageable pageable);
+    Optional<Post> findByPostslugAndStatus(String slug, Status status);
     List<Post> findByPostTag(Tag tag);
     void deleteByPostId(int id);
 }

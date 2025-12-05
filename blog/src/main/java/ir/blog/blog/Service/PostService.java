@@ -1,17 +1,19 @@
 package ir.blog.blog.Service;
 
+import ir.blog.blog.DTO.PostDto;
 import ir.blog.blog.Model.Post;
 import ir.blog.blog.Model.Tag;
 import ir.blog.blog.Model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface PostService {
 
-    Post CreatePost(Post post);
+    Post CreatePost(Post post, Authentication auth);
 
     Post UpdatePost(int id,Post post);
 
@@ -31,7 +33,11 @@ public interface PostService {
 
     Page<Post> findPublishedPosts(Pageable pageable);
 
-    Page<Post> findPublishedPostsbyslug(String slug,Pageable pageable);
+    Optional<Post> findPublishedPostbyslug(String slug);
 
     List<Post> findByTag(Tag tag);
+
+    Post savePostFromDto(PostDto dto
+            //, Authentication auth
+    );
 }

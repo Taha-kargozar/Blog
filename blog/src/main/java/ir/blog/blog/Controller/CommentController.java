@@ -2,9 +2,14 @@ package ir.blog.blog.Controller;
 
 import ir.blog.blog.DTO.CommentDto;
 import ir.blog.blog.Model.Comment;
+import ir.blog.blog.Model.Post;
 import ir.blog.blog.Service.CommentService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,14 +26,6 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-   /* @GetMapping("/post/{postId}")
-    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable int postId) {
-        List<Comment> comments = commentService.findByPostId(postId);
-        return ResponseEntity.ok(comments);
-    }
-
-    */
-
     @GetMapping("/{id}")
     public ResponseEntity<Comment> getCommentById(@PathVariable int id) {
         Optional<Comment> comment = commentService.findById(id);
@@ -43,6 +40,7 @@ public class CommentController {
         comment.setAuthorName(commentDto.authorName());
         comment.setApproved(FALSE);
         comment.setEmail(commentDto.Email());
+        comment.setPostC(commentDto.postC());
         Comment savedComment = commentService.createComment(comment);
         return ResponseEntity.ok(savedComment);
     }
@@ -51,5 +49,16 @@ public class CommentController {
     public ResponseEntity<?> deleteComment(@PathVariable int id) {
         commentService.DeleteComment(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/all")
+    public Page<Comment> findall(Pageable pageable) {
+        return commentService.getAllCommentForShow(pageable);
+    }
+
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<Comment> findallForADMIN(Pageable pageable) {
+        return commentService.getAllCommentForAdmin(pageable);
     }
 }

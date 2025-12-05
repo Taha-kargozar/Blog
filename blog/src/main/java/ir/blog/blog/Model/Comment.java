@@ -9,20 +9,23 @@ import java.time.LocalDateTime;
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int CommentId;
+    private int commentId;
 
     private String content;
     private String authorName;
     private boolean approved = false;
     private LocalDateTime createdAt;
     private String Email;
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post postC;
 
     public int getCommentId() {
-        return CommentId;
+        return commentId;
     }
 
     public void setCommentId(int commentId) {
-        CommentId = commentId;
+        this.commentId = commentId;
     }
 
     public String getContent() {
@@ -63,5 +66,13 @@ public class Comment {
 
     public void setEmail(String email) {
         Email = email;
+    }
+
+    public Post getPostC() {
+        return postC;
+    }
+
+    public void setPostC(Post postC) {
+        this.postC = postC;
     }
 }

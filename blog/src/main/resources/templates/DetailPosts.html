@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fa">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${post.title}">جزئیات پست</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body dir="rtl" class="bg-light">
+
+<div class="container my-5">
+    <div th:if="${param.error}" class="alert alert-danger">
+        پست مورد نظر یافت نشد.
+    </div>
+
+    <article class="post-detail bg-white p-4 rounded shadow-sm">
+        <h1 class="mb-3" th:text="${post.title}">عنوان پست</h1>
+
+        <div class="text-muted mb-4">
+            نویسنده: <strong th:text="${post.author?.fullName ?: 'ناشناس'}">ناشناس</strong> |
+            تاریخ انتشار:
+            <span th:text="${#temporals.format(post.publishedAt, 'yyyy/MM/dd')}">1404/01/01</span> |
+            بازدید: <span th:text="${post.views}">0</span>
+        </div>
+
+        <div class="post-content fs-5" th:utext="${post.content}">
+            محتوای پست...
+        </div>
+    </article>
+
+    <section class="comments-section mt-5">
+        <h3>
+            <span th:id="commentsCount" th:text="${#lists.isEmpty(comments) ? '0' : #lists.size(comments)}">0</span>
+            نظر
+        </h3>
+
+        <div th:id="noComments" th:if="${#lists.isEmpty(comments)}" class="text-muted">
+            هنوز نظری ثبت نشده است.
+        </div>
+
+        <div th:id="approvedComments">
+            <div th:each="comment : ${comments}" class="comment-item border-bottom pb-3 mb-3">
+                <div class="d-flex justify-content-between">
+                    <strong th:text="${comment.authorName}">کاربر</strong>
+                    <small class="text-muted"
+                           th:text="${#temporals.format(comment.createdAt, 'yyyy/MM/dd HH:mm')}">1404/01/01</small>
+                </div>
+                <p class="mt-2 mb-0" th:text="${comment.content}">متن نظر...</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="comment-form mt-5">
+        <h4>ارسال نظر جدید</h4>
+        <form id="commentForm" th:action="@{/comments}" method="post">
+            <input type="hidden" id="postId" name="postId" th:value="${post.postId}" />
+
+            <div class="mb-3">
+                <label for="authorName" class="form-label">نام شما *</label>
+                <input type="text" class="form-control" id="authorName" name="authorName" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="authorEmail" class="form-label">ایمیل شما *</label>
+                <input type="email" class="form-control" id="authorEmail" name="authorEmail" required />
+            </div>
+
+            <div class="mb-3">
+                <label for="content" class="form-label">نظر شما *</label>
+                <textarea class="form-control" id="content" name="content" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">ارسال نظر</button>
+            <small class="text-muted">نظر شما پس از تأیید مدیریت نمایش داده می‌شود.</small>
+        </form>
+    </section>
+</div>
+
+<script th:src="@{/js/post-detail.js}"></script>
+
+</body>
+</html>

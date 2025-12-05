@@ -1,37 +1,42 @@
 package ir.blog.blog.Service;
 
-import ir.blog.blog.Model.Post;
-import ir.blog.blog.Model.Status;
-import ir.blog.blog.Model.Tag;
-import ir.blog.blog.Model.User;
+import ir.blog.blog.DTO.PostDto;
+import ir.blog.blog.Model.*;
 import ir.blog.blog.Repository.PostRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static ir.blog.blog.Model.Status.PUBLISHED;
 
 @Service
 public class PostServiceImpl implements PostService {
     private final PostRepo postRepo;
+    private final CategoryService categoryService;
+    private final TagService tagService;
+    private final UserService userService;
 
-    public PostServiceImpl(PostRepo postRepo) {
+    public PostServiceImpl(PostRepo postRepo, CategoryService categoryService, TagService tagService, UserService userService) {
         this.postRepo = postRepo;
+        this.categoryService = categoryService;
+        this.tagService = tagService;
+        this.userService = userService;
     }
 
 
     @Override
-   public Post CreatePost(Post post) {
+   public Post CreatePost(Post post,Authentication authentication) {
        post.setStatus(post.getStatus() != null ? post.getStatus() : Status.DRAFT);
-       post.setCreatedAt(LocalDateTime.now());
-       if (Status.PUBLISHED.equals(post.getStatus())) {
-           post.setPublishedAt(LocalDateTime.now());
-       }
+       post.setAuthor((User) authentication);
        return postRepo.save(post);
    }
-
     @Override
     public Post UpdatePost(int id, Post post) {
         return postRepo.findById(id)
@@ -40,10 +45,6 @@ public class PostServiceImpl implements PostService {
                     existing.setContent(post.getContent());
                     existing.setPostslug(post.getTitle());
                     existing.setStatus(post.getStatus());
-                    existing.setUpdatedAt(LocalDateTime.now());
-                    if (post.getStatus().PUBLISHED.equals(post.getStatus()) && existing.getPublishedAt() == null) {
-                        existing.setPublishedAt(LocalDateTime.now());
-                    }
                     return postRepo.save(existing);
                 })
                 .orElseThrow(() -> new RuntimeException("Post not found with id: " + id));
@@ -86,16 +87,111 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<Post> findPublishedPosts(Pageable pageable) {
-        return postRepo.findByStatus(Status.PUBLISHED, pageable);
+        return postRepo.findByStatus(PUBLISHED, pageable);
     }
 
     @Override
-    public Page<Post> findPublishedPostsbyslug(String slug,Pageable pageable) {
-        return postRepo.findByStatusAndPostslug(Status.PUBLISHED,slug,pageable);
+    public Optional<Post> findPublishedPostbyslug(String slug) {
+        return postRepo.findByPostslugAndStatus(slug,PUBLISHED);
     }
 
     @Override
     public List<Post> findByTag(Tag tag) {
         return postRepo.findByPostTag(tag);
     }
+
+   /* @Override
+    public Post savePostFromDto(PostDto dto, Authentication auth) {
+        // PostServiceImpl.java
+            Post post = new Post();
+
+            post.setTitle(dto.title());
+            post.setContent(dto.content());
+            post.setExcerpt(dto.excerpt());
+            post.setStatus(dto.status() != null ? dto.status() : Status.DRAFT);
+
+            // نویسنده
+            User user = (User) auth.getPrincipal();
+            post.setAuthor(user);
+        String username = auth.getName(); // یا ((UserDetails) auth.getPrincipal()).getUsername()
+        User user1 = userService.findByUsername(username);
+        post.setAuthor(user1);
+
+            // دسته‌بندی
+            if (dto.categoryID() != null) {
+                Category category = categoryService.findById(dto.categoryID())
+                        .orElseThrow(() -> new IllegalArgumentException("دسته‌بندی یافت نشد"));
+                post.setCategory(category);
+            }
+
+            // تگ‌ها
+            if (dto.PostTagID() != null && !dto.PostTagID().isEmpty()) {
+                List<Tag> tags = dto.PostTagID().stream()
+                        .map(id -> tagService.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException("تگ یافت نشد: " + id)))
+                        .collect(Collectors.toList());
+                post.setPostTag(tags);
+            } else {
+                post.setPostTag(new ArrayList<>());
+            }
+
+            // slug
+            String slug = dto.title().toLowerCase().replaceAll("[^\\w\\s-]", "").replaceAll("[-\\s]+", "-");
+            post.setPostslug(slug);
+
+            // views
+            post.setViews(0);
+
+            return postRepo.save(post);
+
+    }
+
+    */
+   @Override
+   public Post savePostFromDto(PostDto dto
+         //  , Authentication auth
+   ) {
+       Post post = new Post();
+       post.setTitle(dto.title());
+       post.setContent(dto.content());
+       post.setExcerpt(dto.excerpt());
+       post.setStatus(dto.status() != null ? dto.status() : Status.DRAFT);
+
+       // 👇 دریافت صحیح کاربر
+       //String username = auth.getName();
+       User user = userService.findByUsername("admin");
+       if (user == null) {
+           throw new IllegalArgumentException("کاربر پیدا نشد: " + "admin");
+       }
+       post.setAuthor(user);
+
+       // دسته‌بندی
+       if (dto.categoryID() != null) {
+           Category category = categoryService.findById(dto.categoryID())
+                   .orElseThrow(() -> new IllegalArgumentException("دسته‌بندی یافت نشد"));
+           post.setCategory(category);
+       }
+
+       // تگ‌ها
+       if (dto.PostTagID() != null && !dto.PostTagID().isEmpty()) {
+           List<Tag> tags = dto.PostTagID().stream()
+                   .map(id -> tagService.findById(id)
+                           .orElseThrow(() -> new IllegalArgumentException("تگ یافت نشد: " + id)))
+                   .collect(Collectors.toList());
+           post.setPostTag(tags);
+       } else {
+           post.setPostTag(new ArrayList<>());
+       }
+
+       // slug
+       String slug = dto.title().toLowerCase()
+               .replaceAll("[^\\w\\s-]", "")
+               .replaceAll("[-\\s]+", "-")
+               .replaceAll("--+", "-");
+       post.setPostslug(slug);
+
+       post.setViews(0);
+
+       return postRepo.save(post);
+   }
 }

@@ -42,15 +42,24 @@ public class CommentServiceImpl implements CommentService {
         return commentRepo.findAll(pageable);
     }
     @Override
-    public void approveComment(int id) {
+    public List<Comment> approveComment(int id) {
         Comment comment = commentRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Comment not found with id: " + id));
         comment.setApproved(true);
         commentRepo.save(comment);
+        return null;
     }
 
     @Override
     public Optional<Comment> findById(int id) {
         return commentRepo.findById(id);
     }
+
+  //  @Override
+ //   public List<Comment> findApprovedById(int id) {return commentRepo.findByCommentIdAndApprovedTrue(id);}
+    @Override
+    public List<Comment> findApprovedByPostId(Integer postId) {
+        return commentRepo.findByPostCPostIdAndApprovedTrueOrderByCreatedAtDesc(postId);
+    }
+
 }

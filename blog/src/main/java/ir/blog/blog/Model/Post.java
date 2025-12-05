@@ -16,16 +16,21 @@ public class Post {
     private String title; //
     private String content; //
     private String postslug ;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status;
     @ManyToOne
     @JoinColumn
     private User author;
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category; //
+    private Category category;
     private String excerpt;  // خلاصه مقاله
+    @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+    @CreationTimestamp
     private LocalDateTime publishedAt;
     private int views;
     @ManyToMany
@@ -108,7 +113,7 @@ public class Post {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
-    @UpdateTimestamp
+    @CreationTimestamp
     public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
@@ -132,6 +137,7 @@ public class Post {
     public void setPostTag(List<Tag> postTag) {
         PostTag = postTag;
     }
+
     @ManyToOne
     public Category getCategory() {
         return category;

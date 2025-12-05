@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مدیریت پست‌ها</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            rtl: true,
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn-font-face.css" rel="stylesheet" />
+    <style>
+        body { font-feature-settings: "rlig" 1; } /* برای فونت فارسی */
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8 font-sans">
+<div class="mb-6 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-gray-800">مدیریت پست‌ها</h1>
+    <a href="/admin/create_post" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">
+        ایجاد پست جدید
+    </a>
+</div>
+
+<div class="max-w-7xl mx-auto">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6">مدیریت پست‌ها</h1>
+
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عنوان</th>
+                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">نویسنده</th>
+                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
+                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
+                <th scope="col" class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عملیات</th>
+            </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200" id="postsTable">
+            <!-- اینجا پست‌ها لود می‌شوند -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let posts = [];
+
+    async function loadPosts() {
+        try {
+            const res = await fetch('http://localhost:8080/controller-post/all');
+            if (!res.ok) throw new Error('خطا در دریافت داده‌ها');
+            const data = await res.json();
+            posts = data.content || [];
+            renderPosts();
+        } catch (err) {
+            console.error(err);
+            document.getElementById('postsTable').innerHTML = `
+            <tr>
+                <td colspan="5" class="px-4 py-6 text-center text-red-500">خطا در بارگذاری پست‌ها</td>
+            </tr>
+        `;
+        }
+    }
+
+    function renderPosts() {
+        const tbody = document.getElementById('postsTable');
+        if (posts.length === 0) {
+            tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="px-4 py-6 text-center text-gray-500">پستی یافت نشد.</td>
+            </tr>
+        `;
+            return;
+        }
+
+        tbody.innerHTML = posts.map(p => `
+        <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs truncate">${p.title || 'بدون عنوان'}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700">${p.author?.username || 'ناشناس'}</td>
+            <td class="px-4 py-3 whitespace-nowrap">
+                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+            p.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+        }">
+                    ${p.status === 'PUBLISHED' ? 'منتشر شده' : 'پیش‌نویس'}
+                </span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                ${p.publishedAt ? new Date(p.publishedAt).toLocaleDateString('fa-IR') :
+            p.createdAt ? new Date(p.createdAt).toLocaleDateString('fa-IR') : 'نامشخص'}
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium space-x-3 space-x-reverse">
+    <button onclick="editPost(${p.postId})" class="text-blue-600 hover:text-blue-900">ویرایش</button>
+    <button onclick="deletePost(${p.postId})" class="text-red-600 hover:text-red-900">حذف</button>
+</td>
+        </tr>
+    `).join('');
+    }
+
+    async function deletePost(id) {
+        if (!confirm('آیا از حذف این پست اطمینان دارید؟')) return;
+        try {
+            await fetch(`http://localhost:8080/controller-post/delete/${id}`, {
+                method: 'DELETE'
+            });
+            loadPosts();
+        } catch (err) {
+            alert('خطا در حذف پست');
+        }
+    }
+loadPosts()
+    async function editPost(id) {
+        window.location.href = `/admin/edit_post/${id}`;
+       }
+</script>
+
+</body>
+</html>

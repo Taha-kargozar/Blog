@@ -9,18 +9,17 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/controller-user")
 public class UserController {
     private final UserService userService;
-    private final PasswordEncoder passwordEncoder;
+   private final PasswordEncoder passwordEncoder;
 
     public UserController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
@@ -34,19 +33,19 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/register")
-    public String register(@Valid RegisterDto registerDto) {
-        if(!registerDto.password().equals(registerDto.repass())) {
-            return "redirect:/register?error=true";
-        }
+    @PostMapping("/auth/register")
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterDto dto, BindingResult result) {
+
         User user = new User();
-        user.setUserName(registerDto.username());
-        user.setName(registerDto.Name());
-        user.setEmail(registerDto.Email());
-        user.setPassword(passwordEncoder.encode(registerDto.password()));
+        user.setUsername(dto.username());
+        user.setName(dto.Name());
+        user.setEmail(dto.Email());
+        user.setPassword(passwordEncoder.encode(dto.password()));
         user.setRole(Role.USER);
+
         userService.save(user);
 
-        return "login";
+        return ResponseEntity.ok("ثبت‌نام با موفقیت انجام شد.");
+
     }
 }

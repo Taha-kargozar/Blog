@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ایجاد پست جدید</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            rtl: true,
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Vazirmatn', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdn.fontcdn.ir/Font/Persian/Vazirmatn/Vazirmatn-font-face.css" rel="stylesheet" />
+    <style> body { font-feature-settings: "rlig" 1; } </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-8 font-sans">
+
+<div class="max-w-4xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">ایجاد پست جدید</h1>
+        <a href="/admin/posts" class="text-indigo-600 hover:text-indigo-800 text-sm">بازگشت به لیست پست‌ها</a>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+        <form th:action="@{/admin/posts}" method="post" th:object="${postDto}">
+            <!-- عنوان -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2" for="title">عنوان پست *</label>
+                <input type="text" id="title" name="title" th:field="*{title}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required />
+            </div>
+
+            <!-- محتوا -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2" for="content">محتوا *</label>
+                <textarea id="content" name="content" th:field="*{content}" rows="8" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500" required></textarea>
+            </div>
+
+            <!-- خلاصه -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2" for="excerpt">خلاصه (excerpt)</label>
+                <textarea id="excerpt" name="excerpt" th:field="*{excerpt}" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+            </div>
+
+            <!-- وضعیت -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2">وضعیت</label>
+                <div class="flex items-center space-x-4 space-x-reverse">
+                    <label>
+                        <input type="radio" name="status" value="DRAFT" th:checked="*{status == null or #strings.equals(status, 'DRAFT')}" /> پیش‌نویس
+                    </label>
+                    <label>
+                        <input type="radio" name="status" value="PUBLISHED" th:checked="*{#strings.equals(status, 'PUBLISHED')}" /> منتشر شده
+                    </label>
+                </div>
+            </div>
+
+            <!-- دسته‌بندی -->
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-medium mb-2" for="categoryID">دسته‌بندی</label>
+                <select id="categoryID" name="categoryID" th:field="*{categoryID}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">بدون دسته‌بندی</option>
+                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.nameCategory}"></option>
+                </select>
+            </div>
+
+            <!-- تگ‌ها -->
+            <div class="mb-6">
+                <label class="block text-gray-700 text-sm font-medium mb-2">تگ‌ها</label>
+                <div id="tagsContainer">
+                    <!-- تگ‌های انتخاب‌شده به صورت داینامیک اضافه می‌شوند -->
+                </div>
+                <div class="mt-2">
+                    <select id="tagSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="">تگی را انتخاب کنید</option>
+                        <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>
+                    </select>
+                    <button type="button" id="addTagBtn" class="mt-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-3 py-1 rounded text-sm">افزودن تگ</button>
+                    <input type="hidden" name="PostTagID" th:each="id : *{PostTagID}" th:value="${id}" />
+                </div>
+            </div>
+
+            <!-- دکمه‌ها -->
+            <div class="flex space-x-3 space-x-reverse">
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md">ذخیره پست</button>
+                <a href="/admin/posts" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">لغو</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // مدیریت تگ‌ها
+    document.getElementById('addTagBtn').addEventListener('click', function() {
+        const select = document.getElementById('tagSelect');
+        const tagId = select.value;
+        const tagName = select.options[select.selectedIndex].text;
+
+        if (!tagId) return;
+
+        // جلوگیری از تکرار
+        if (document.querySelector(`input[name='PostTagID'][value='${tagId}']`)) {
+            alert('این تگ قبلاً اضافه شده است.');
+            return;
+        }
+
+        const container = document.getElementById('tagsContainer');
+        const tagDiv = document.createElement('div');
+        tagDiv.className = 'inline-flex items-center bg-blue-100 text-blue-800 text-sm px-2 py-1 rounded mr-2 mt-1';
+        tagDiv.innerHTML = `
+        ${tagName}
+        <button type="button" class="ml-1 text-blue-600 hover:text-blue-900" onclick="this.parentElement.remove(); document.querySelector('input[name=\\'PostTagID\\'][value=${tagId}]').remove();">
+            &times;
+        </button>
+    `;
+        container.appendChild(tagDiv);
+
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'PostTagID';
+        hiddenInput.value = tagId;
+        document.querySelector('form').appendChild(hiddenInput);
+    });
+</script>
+
+</body>
+</html>
