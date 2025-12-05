@@ -3,6 +3,7 @@ package ir.blog.blog.Controller;
 import ir.blog.blog.DTO.PostDto;
 import ir.blog.blog.Model.*;
 import ir.blog.blog.Service.*;
+import ir.blog.blog.myException.NotFoundException;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -77,7 +78,7 @@ public class PageController {
     @GetMapping("/posts/view/{slug}")
     public String showPost(@PathVariable String slug, Model model,Authentication auth) {
         Post post = postService.findBySlug(slug)
-                .orElseThrow(() -> new IllegalArgumentException("پست یافت نشد"));
+                .orElseThrow(() -> new NotFoundException("پست یافت نشد"));
 
         post.setViews(post.getViews() + 1);
         postService.CreatePost(post,auth);
@@ -108,7 +109,6 @@ public class PageController {
         // پیدا کردن پست اصلی
         Post existingPost = postService.getbyId(id);
         if (existingPost == null) {
-          //  redirectAttrs.addFlashAttribute("error", "پست یافت نشد.");
             return "redirect:/admin/posts";
         }
 
@@ -119,7 +119,7 @@ public class PageController {
         existingPost.setPostslug(post.getPostslug());
         existingPost.setStatus(post.getStatus());
 
-        postService.CreatePost(existingPost,auth); // یا updatePost
+        postService.CreatePost(existingPost,auth);
 
         redirectAttrs.addFlashAttribute("message", "پست با موفقیت بروزرسانی شد.");
         return "redirect:/admin/posts";

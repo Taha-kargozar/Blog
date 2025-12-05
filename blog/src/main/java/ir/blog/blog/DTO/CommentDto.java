@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public record CommentDto(
-        @NotBlank(message = "content.blank")
+        @NotBlank(message = "content.comment.blank")
         String content,
          LocalDateTime created,
                  @NotBlank
