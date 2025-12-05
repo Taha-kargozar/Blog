@@ -31,7 +31,8 @@ public class SecurityConfig {
                                             Authentication authentication) throws IOException, ServletException {
 
             Set<String> roles = AuthorityUtils.authorityListToSet(authentication.getAuthorities());
-
+            System.out.println("✅ کاربر وارد شد: " + authentication.getName());
+            System.out.println("✅ نقش‌ها: " + AuthorityUtils.authorityListToSet(authentication.getAuthorities()));
             if (roles.contains("ROLE_ADMIN")) {
                 response.sendRedirect("/admin/dashboard");
             } else {
@@ -55,7 +56,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/posts/**", "/auth/**", "/css/**", "/js/**","/controller-post/all", "/comments" , "/posts/{slug}/comment").permitAll()
+                        .requestMatchers("/", "/posts/**", "/auth/**","/register", "/css/**","/auth/register", "/js/**","/controller-post/**","/controller-post/all", "/comments" , "/posts/{slug}/comment", "/controller-post/delete/**" , "/debug", "/controller-user/**","/controller-user/auth/register").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
@@ -74,7 +75,8 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/auth/logout")
+                        .ignoringRequestMatchers("/auth/logout","/auth/register")
+                        .ignoringRequestMatchers("/controller-user/register")
                 );
 
         return http.build();

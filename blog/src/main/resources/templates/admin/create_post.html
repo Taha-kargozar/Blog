@@ -29,7 +29,7 @@
     </div>
 
     <div class="bg-white p-6 rounded-lg shadow">
-        <form th:action="@{/admin/posts}" method="post" th:object="${postDto}">
+        <form th:action="@{/admin/createposts}" method="post" th:object="${postDto}">
             <!-- عنوان -->
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-medium mb-2" for="title">عنوان پست *</label>
@@ -89,7 +89,7 @@
             <!-- دکمه‌ها -->
             <div class="flex space-x-3 space-x-reverse">
                 <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md">ذخیره پست</button>
-                <a href="/admin/posts" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">لغو</a>
+                <a href="/admin/createposts" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-md">لغو</a>
             </div>
         </form>
     </div>

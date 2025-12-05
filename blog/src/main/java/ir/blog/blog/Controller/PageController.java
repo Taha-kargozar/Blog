@@ -1,6 +1,7 @@
 package ir.blog.blog.Controller;
 
 import ir.blog.blog.DTO.PostDto;
+import ir.blog.blog.DTO.RegisterDto;
 import ir.blog.blog.Model.*;
 import ir.blog.blog.Service.*;
 import ir.blog.blog.myException.NotFoundException;
@@ -56,13 +57,56 @@ public class PageController {
     public String login() {
         return "login";
     }
+    /*
+    @GetMapping("/auth/register")
+    public String register(Model model) {
+        model.addAttribute("registerDto", new RegisterDto("", "", "", "", ""));
+        return "register";
+    }
+    @PostMapping("/auth/register")
+    public String register(
+            @Valid @ModelAttribute("registerDto") RegisterDto dto,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttrs,
+            Model model) {
+
+        // چک تطابق رمز و تکرار آن
+        if (!dto.password().equals(dto.repass())) {
+            bindingResult.rejectValue("repass", "passwords.do.not.match", "رمز عبور و تکرار آن یکسان نیستند.");
+        }
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("registerDto", dto);
+            return "register"; // بازگشت به همان صفحه با خطاها
+        }
+
+        User user = new User();
+        user.setUsername(dto.username());
+        user.setName(dto.name());
+        user.setEmail(dto.email());
+        user.setPassword(passwordEncoder.encode(dto.password()));
+        user.setRole(Role.USER);
+
+        userService.save(user);
+
+        redirectAttrs.addFlashAttribute("message", "ثبت‌نام با موفقیت انجام شد.");
+        return "redirect:/auth/login";
+    }
+
+     */
     @GetMapping("/auth/register")
     public String register() {
         return "register";
     }
 
+    @GetMapping("/register")
+    public String showRegisterForm(Model model) {
+        model.addAttribute("registerDto", new RegisterDto("", "", "", ""));
+        return "register";
+    }
+
     @GetMapping("/admin/posts")
-   // @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public String adminPosts(Model model, Pageable pageable) {
         Page<Post> page = postService.getAllPosts(pageable);
         model.addAttribute("posts", page != null ? page : Page.empty());
@@ -176,7 +220,7 @@ public class PageController {
         model.addAttribute("tags", tagService.findAll());
         return "admin/create_post";
     }
-    @PostMapping("/admin/posts")
+    @PostMapping("/admin/createposts")
     @PreAuthorize("hasRole('ADMIN')")
     public String createPost(@Valid @ModelAttribute PostDto postDto,
                              Authentication auth,
@@ -285,5 +329,21 @@ public class PageController {
         }
         return "redirect:/admin/users";
     }
+    @PostMapping("/admin/posts/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deletePost(@PathVariable Integer id, RedirectAttributes redirectAttrs) {
+        postService.DeletePost(id);
+        redirectAttrs.addFlashAttribute("message", "پست با موفقیت حذف شد.");
+        return "redirect:/admin/posts";
+    }
+    @GetMapping("/debug")
+    public String debug(Authentication auth, Model model) {
+        if (auth != null) {
+            model.addAttribute("name", auth.getName());
+            model.addAttribute("roles", auth.getAuthorities());
+        }
+        return "debug";
+    }
+
     }
 
