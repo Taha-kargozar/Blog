@@ -17,7 +17,7 @@
         <h1 class="mb-3" th:text="${post.title}">عنوان پست</h1>
 
         <div class="text-muted mb-4">
-            نویسنده: <strong th:text="${post.author?.fullName ?: 'ناشناس'}">ناشناس</strong> |
+            نویسنده: <strong th:text="${post.author?.name ?: 'ناشناس'}">ناشناس</strong> |
             تاریخ انتشار:
             <span th:text="${#temporals.format(post.publishedAt, 'yyyy/MM/dd')}">1404/01/01</span> |
             بازدید: <span th:text="${post.views}">0</span>
